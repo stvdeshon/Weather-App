@@ -7,10 +7,12 @@ function destructureCurrentWeather({
 }) {
   document.querySelector("#current-location").textContent = `${name}`;
   document.querySelector("#condition").textContent = `${main}`;
-  document.querySelector("#temp").textContent = `${temp}`;
-  document.querySelector("#feels-like").textContent = `${feels_like}`;
-  document.querySelector("#humidity").textContent = `${humidity}`;
-  document.querySelector("#wind").textContent = `${speed}`;
+  document.querySelector("#temp").textContent = `Temperature: ${temp}`;
+  document.querySelector(
+    "#feels-like"
+  ).textContent = `Feels like: ${feels_like}`;
+  document.querySelector("#humidity").textContent = `Humidity: ${humidity}`;
+  document.querySelector("#wind").textContent = `Wind: ${speed} MPH`;
 }
 
 async function defaultCurrentWeather() {
@@ -22,6 +24,7 @@ async function defaultCurrentWeather() {
   const weatherData = await response.json();
   destructureCurrentWeather(weatherData);
   fiveDayForecast(weatherData);
+  console.log(weatherData);
 }
 window.addEventListener("load", defaultCurrentWeather);
 
@@ -55,14 +58,26 @@ async function fiveDayForecast({ coord: { lat, lon } }) {
       fiveDayArray.push(data.list[i]);
     }
   }
-  destructureFiveDay(fiveDayArray);
+  displayForecast(fiveDayArray);
 }
 
-function destructureFiveDay(array) {
-  const first = array[0];
-  const second = array[1];
-  const third = array[2];
-  const fourth = array[3];
-  const fifth = array[4];
-  console.log(fourth);
+function displayForecast(array) {
+  array.forEach((entry) => {
+    document.querySelector(
+      "#weather-container"
+    ).innerHTML += `<div class="forecast">
+    <p class="day">${dateSet(entry.dt_txt)}</p>
+    <p class="condition">${entry.weather[0].main}</p>
+    <p class="temp">${entry.main.temp}</p>
+    <p class="feels-like">${entry.main.feels_like}</p>
+    <p class="humidity">${entry.main.humidity}</p>
+    <p class="wind">${entry.wind.speed}</p>
+  </div>`;
+  });
+}
+
+function dateSet(val) {
+  const formattedDate = val.split(" ")[0];
+  let d = new Date(`${formattedDate}`).toDateString().split(" ");
+  return (date = d[0] + ", " + d[1] + " " + d[2]);
 }

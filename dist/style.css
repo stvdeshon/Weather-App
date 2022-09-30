@@ -10,8 +10,13 @@ html {
   border: 1px solid black;
   height: fit-content;
   display: flex;
+  gap: 100px;
 }
 
 #location {
   border: 1px solid blue;
+}
+
+.forecast {
+  margin-top: 30px;
 }
