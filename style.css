@@ -13,6 +13,11 @@ html {
   gap: 100px;
 }
 
+#forecast {
+  display: flex;
+  gap: 100px;
+}
+
 #location {
   border: 1px solid blue;
 }
