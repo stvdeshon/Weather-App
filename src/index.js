@@ -1,3 +1,34 @@
+async function defaultCurrentWeather() {
+  const defaultCity = "New York";
+  const response = await fetch(
+    `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity}&units=imperial&APPID=d53b7a1b0831587e43e406c3f5532905`,
+    { mode: "cors" }
+  );
+  const weatherData = await response.json();
+  destructureCurrentWeather(weatherData);
+  fiveDayForecast(weatherData);
+  console.log(weatherData);
+}
+
+const search = document.querySelector("input");
+search.addEventListener("keypress", async (e) => {
+  if (e.key === "Enter") {
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${e.target.value}&units=imperial&APPID=d53b7a1b0831587e43e406c3f5532905`,
+        { mode: "cors" }
+      );
+      const location = await response.json();
+      console.log(location);
+      destructureCurrentWeather(location);
+      fiveDayForecast(location);
+    } catch (err) {
+      return null;
+    }
+    search.value = "";
+  }
+});
+
 //extracts the data I want from the API object
 function destructureCurrentWeather({
   name,
@@ -15,37 +46,6 @@ function destructureCurrentWeather({
   document.querySelector("#wind").textContent = `Wind: ${speed} MPH`;
 }
 
-async function defaultCurrentWeather() {
-  const defaultCity = "New York";
-  const response = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity}&units=imperial&APPID=d53b7a1b0831587e43e406c3f5532905`,
-    { mode: "cors" }
-  );
-  const weatherData = await response.json();
-  destructureCurrentWeather(weatherData);
-  fiveDayForecast(weatherData);
-  console.log(weatherData);
-}
-window.addEventListener("load", defaultCurrentWeather);
-
-const search = document.querySelector("input");
-search.addEventListener("keypress", async (e) => {
-  if (e.key === "Enter") {
-    try {
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${e.target.value}&units=imperial&APPID=d53b7a1b0831587e43e406c3f5532905`,
-        { mode: "cors" }
-      );
-      const location = await response.json();
-      destructureCurrentWeather(location);
-      fiveDayForecast(location);
-    } catch (err) {
-      return null;
-    }
-    search.value = "";
-  }
-});
-
 async function fiveDayForecast({ coord: { lat, lon } }) {
   const response = await fetch(
     `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=d53b7a1b0831587e43e406c3f5532905`,
@@ -62,10 +62,9 @@ async function fiveDayForecast({ coord: { lat, lon } }) {
 }
 
 function displayForecast(array) {
+  document.querySelector("#forecast").innerHTML = "";
   array.forEach((entry) => {
-    document.querySelector(
-      "#weather-container"
-    ).innerHTML += `<div class="forecast">
+    document.querySelector("#forecast").innerHTML += `<div>
     <p class="day">${dateSet(entry.dt_txt)}</p>
     <p class="condition">${entry.weather[0].main}</p>
     <p class="temp">${entry.main.temp}</p>
@@ -81,3 +80,5 @@ function dateSet(val) {
   let d = new Date(`${formattedDate}`).toDateString().split(" ");
   return (date = d[0] + ", " + d[1] + " " + d[2]);
 }
+
+window.addEventListener("DOMContentLoaded", defaultCurrentWeather);
